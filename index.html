@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+</head>
+
+
+<style>
+    :root[theme="dark"] {
+        --background-color: black;
+        --color: rgb(235, 235, 235);
+
+        --background-color-o: white;
+        --color-o: black;
+    }
+
+    :root[theme="light"] {
+        --background-color: white;
+        --color: black;
+    }
+
+    @font-face {
+        font-family: 'Roboto';
+        src: url(/fonts/Roboto-Regular.ttf) format('.ttf');
+    }
+
+    @keyframes newTask {
+        0% {
+            opacity: 20%;
+            transform: translateX(-3px);
+        }
+
+        100% {
+            opacity: 100%;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes loadIn {
+        0% {
+            opacity: 0.8;
+            scale: 0.97;
+        }
+
+        60% {
+            opacity: 1;
+            scale: 1;
+        }
+
+        75% {
+            scale: 0.995;
+        }
+
+        100% {
+            scale: 1;
+        }
+    }
+
+    @keyframes menuLoad {
+        0% {
+            transform: translateX(+3px);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateX(0px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes scroll {
+        0% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.5;
+        }
+    }
+
+    html {
+        background-color: var(--background-color);
+    }
+
+    #ul {
+        max-height: calc(100vh - 100px);
+        overflow: auto;
+    }
+
+    body {
+        margin: 20px;
+        margin-bottom: 0px;
+        font-family: 'Roboto';
+        overflow: hidden;
+        background-color: var(--background-color);
+        color: var(--color);
+        position: relative;
+    }
+
+    .container {
+        z-index: 1;
+        position: absolute;
+        animation: loadIn 0.4s ease-in forwards;
+        overflow: auto;
+    }
+
+    .menu {
+        z-index: 2;
+        position: absolute;
+    }
+
+    input,
+    button,
+    select {
+        border-radius: 6px;
+        border: 1.5px solid;
+        padding: 3px;
+        background-color: var(--background-color);
+        color: var(--color);
+        margin: 2px;
+        margin-top: 5px;
+    }
+
+    button {
+        display: none;
+    }
+
+    li {
+        animation: newTask 0.25s ease-in forwards;
+    }
+
+    /* li {
+        animation-name: scroll;
+        animation-timeline: view();
+        animation-range: entry 0% cover 100%;
+    } */
+
+    div.menu {
+        background-color: var(--background-color);
+        height: 100vh;
+        width: 100vw;
+        padding: 30px;
+        animation: menuLoad 0.25s ease-in forwards;
+    }
+
+    .menu-buttons,
+    p {
+        display: unset;
+        z-index: 2;
+    }
+
+    .main-button {
+        background-color: var(--background-color-o);
+        color: var(--color-o);
+    }
+
+
+
+    @media (max-width: 480px) {
+
+        body,
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input,
+        button,
+        select {
+            padding: 10px;
+        }
+
+        button {
+            display: unset;
+            margin: 0px;
+        }
+
+        .container h1 {
+            align-items: center;
+        }
+
+        .container {
+            max-width: 250px;
+        }
+
+        div.menu p {
+            max-width: 250px;
+        }
+
+    }
+</style>
+
+
+<!-- Main html structure -->
+
+<body>
+
+    <div class="container">
+
+        <h1>Todo</h1>
+
+        <div id="main-div">
+            <form id="form">
+                <input type="text" id="input" placeholder="Enter task name..." autocomplete="off">
+                <button onclick="buttonAction()" id="button">Add</button>
+            </form>
+
+            <select id="selection">
+                <option value="1">create</option>
+                <option value="2">delete</option>
+            </select>
+
+            <p id="task-count" style="font-size: 0.8;">tasks: unknown</p>
+        </div>
+
+        <ul id="ul">
+        </ul>
+
+    </div>
+
+</body>
+
+<!-- Javascript code -->
+<script>
+    const taskInput = document.getElementById('input');
+    const taskList = document.getElementById('ul');
+    let listArray = JSON.parse(localStorage.getItem("tasks")) || [];
+
+
+    function createLi(input) {
+        const newList = document.createElement('li');
+        newList.textContent = input;
+        newList.id = input;
+        newList.setAttribute('onclick', `deletionProcess(this.id, 0)`)
+        taskList.appendChild(newList);
+    }
+
+    function updateTaskCount() {
+        const taskCount = document.querySelectorAll('li');
+        document.getElementById('task-count').textContent = `count: ${taskCount.length}`
+    }
+
+    function createTask(input) {
+        try {
+            if (!taskInput.value == "") {
+                createLi(taskInput.value)
+
+                listArray.push(input)
+                localStorage.setItem("tasks", JSON.stringify(listArray))
+
+                console.log(`Add: "${input}" was registerd`);
+            } else {
+                console.error('error: The text box is emty')
+            }
+
+        } catch (error) {
+            console.error(error)
+
+        }
+
+        taskInput.value = '';
+        updateTaskCount()
+    }
+
+    function deleteTask(input) {
+        try {
+            document.getElementById(input).remove()
+
+            listArray.splice(listArray.indexOf(input), 1)
+            localStorage.setItem("tasks", JSON.stringify(listArray))
+
+            console.log(`Add: "${input}" was removed`);
+        } catch (error) {
+
+            if (taskInput.value == "") {
+                console.error("Text box is emty")
+            } else {
+                console.error(`error: item called "${input}" wasn't found`)
+            }
+            console.error(error)
+        }
+
+        taskInput.value = '';
+        updateTaskCount()
+
+    }
+
+    function deletionProcess(input, step = 0) {
+
+        if (step == 0) {
+            const menu = document.createElement('div')
+            menu.innerHTML = `
+                <p>Are you sure that you want to delete "${input}"?</p>
+                <div>
+                    <button id="confirm" class="menu-buttons main-button" onclick="deletionProcess('${input}', 1)" >Confirm</button>
+                    <button id="cancel" class="menu-buttons" onclick="deletionProcess(null, 2)">Cancel</button>
+                </div>`
+            menu.className = "menu";
+            document.body.appendChild(menu)
+            document.getElementById('confirm').focus()
+
+
+            console.log("The deletion menu opened")
+
+        } else if (step == 1) {
+            try {
+                document.getElementsByClassName('menu').item(0).remove()
+                deleteTask(input)
+
+                console.log("The deletion menu closed")
+            } catch (error) {
+                deletionProcess(null, 2)
+                console.error(error)
+            }
+        } else if (step == 2) {
+            document.getElementsByClassName('menu').item(0).remove()
+
+        } else {
+            console.log(`Step: ${step.toString()} doesn't exist`)
+        }
+
+
+
+
+
+    }
+
+    function buttonAction() {
+        let action = document.getElementById('selection').value
+        switch (action) {
+            case "1":
+                createTask(taskInput.value)
+                break;
+            case "2":
+                deleteTask(taskInput.value.toString())
+                break;
+        }
+    }
+
+    async function saveTaskListToFile() {
+
+        try {
+            console.log("attempting to save...")
+            const handle = await window.showSaveFilePicker({
+                suggestedName: "Task-List.json",
+                type: [
+                    {
+                        description: 'JSON Files',
+                        accept: {
+                            'application/json': ['.json'],
+                        },
+                    },
+                ],
+            });
+
+            const writableStream = await handle.createWritable();
+
+            await writableStream.write(JSON.stringify(listArray))
+
+            await writableStream.close()
+
+        } catch (error) {
+            if (error.name == 'AbortError') {
+                console.error('The file saving process was canceled')
+            }
+            console.error(error);
+        }
+
+
+    }
+
+    async function getTaskListFromFile() {
+        try {
+            const [handle] = await window.showOpenFilePicker(
+                {
+                    type: [
+                        {
+                            description: 'JSON Files',
+                            accept: {
+                                'application/json': ['.json'],
+                            },
+                        },
+                    ],
+                    multiple: false,
+                }
+            )
+
+            const file = await handle.getFile()
+
+            const fileData = await file.text()
+
+            return fileData
+
+        } catch (error) {
+            if (error.name == 'AbortError') {
+                console.error('The file loading process was canceled')
+            } else {
+                console.error(error)
+            }
+
+        }
+
+
+    }
+
+    async function loadFileDataToTaskList() {
+        try {
+            const taskData = await getTaskListFromFile()
+            listArray = await JSON.parse(taskData);
+            await localStorage.setItem("tasks", JSON.stringify(listArray))
+
+            await document.querySelectorAll('li').forEach(item => {
+                item.remove()
+            })
+
+            await listArray.forEach(item => {
+                createLi(item)
+                console.log(item)
+            })
+
+            await updateTaskCount()
+
+        } catch (error) {
+            console.error(error)
+        }
+
+    }
+
+
+
+    listArray.forEach(item => {
+        createLi(item)
+        console.log(item)
+    })
+
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('theme', 'light')
+    }
+
+    updateTaskCount()
+
+    document.getElementById('selection').addEventListener("change", event => {
+        const button = document.getElementById('button')
+        let action = document.getElementById('selection').value
+        switch (action) {
+            case "1":
+                button.textContent = 'Add'
+                break;
+            case "2":
+                button.textContent = 'Remove'
+                break;
+        }
+    })
+
+    document.getElementById('form').addEventListener("submit", event => { event.preventDefault() })
+
+    document.addEventListener("keydown", event => {
+
+        if ((event.metaKey || event.ctrlKey) && event.key == 'Enter') {
+            taskInput.focus();
+            console.log("cmd or ctrl + enter was pressed");
+        }
+
+        if ((event.metaKey || event.ctrlKey) && (event.key == 's')) {
+            event.preventDefault()
+            saveTaskListToFile()
+            console.log("cmd or ctrl + shift + s: was clicked")
+        } else if ((event.metaKey || event.ctrlKey) && (event.key == 'l')) {
+            event.preventDefault()
+            loadFileDataToTaskList();
+            console.log("cmd or ctrl + shift + l: was clicked")
+        }
+    })
+
+</script>
+
+</html>
