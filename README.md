@@ -1,2 +1,22 @@
 # Todo-app
-This small html-javascript-css task app
+This is a simple html-javascript-css task app built for learning and gaining experience in building.
+
+>[!TIP]
+> There is a hosted version:
+>
+> https://revi-studios.github.io/Todo-app/
+
+
+## What is it?
+It is a simple todo app with a clean black and white interface featuring smooth animation.
+
+**Features:**
+- Task creation/deletion
+- Simple interface
+- Smooth animations
+- File exporting/importing
+- Tasks stored on-device
+
+
+## Why does it exist?
+This project was built for learning purposes. To enhance building knowledge, improving future projects.
