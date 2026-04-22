@@ -17,6 +17,17 @@ It is a simple todo app with a clean black and white interface featuring smooth 
 - File exporting/importing
 - Tasks stored on-device
 
+**Shortcuts:**
+| Shortcut       | Does         |
+|----------------|--------------|
+| Ctrl + Enter   | Focus Input  |
+| Ctrl + S       | Export tasks | 
+| Ctrl + L       | Import tasks |
+
+>[!NOTE]
+> The ctrl key can be replaced with the meta key.
+>
+> On *MacOS* it is the *cmd* key
 
 ## Why does it exist?
 This project was built for learning purposes. To enhance building knowledge, improving future projects.
